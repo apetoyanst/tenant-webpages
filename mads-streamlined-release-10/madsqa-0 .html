@@ -29,18 +29,28 @@
 
   <!-- ServiceTitan DNI -->
   <script>
-      dni = (function(q,w,e,r,t,y,u){q['ServiceTitanDniObject']=t;q[t]=q[t]||function(){
-          (q[t].q=q[t].q||[]).push(arguments)};q[t].l=1*new Date();y=w.createElement(e);
-          u=w.getElementsByTagName(e)[0];y.async=true;y.src=r;u.parentNode.insertBefore(y,u);
-          return q[t];
-      })(window,document,'script','https://static.servicetitan.com/marketing-ads/dni.js','dni');
-      dni('init', '529', {api:'https://qa-mads-streamlined-release-10-nextgen.st.dev'});
-      document.addEventListener('DOMContentLoaded', function() { dni('load'); }, false);
+    dni = (function(q, w, e, r, t, y, u) {
+      q['ServiceTitanDniObject'] = t;
+      q[t] = q[t] || function() {
+        (q[t].q = q[t].q || []).push(arguments)
+      };
+      q[t].l = 1 * new Date();
+      y = w.createElement(e);
+      u = w.getElementsByTagName(e)[0];
+      y.async = true;
+      y.src = r;
+      u.parentNode.insertBefore(y, u);
+      return q[t];
+    })(window, document, 'script', 'https://static.servicetitan.com/marketing-ads/dni.js', 'dni');
+    dni('init', '529', {
+      api: 'https://qa-mads-streamlined-release-10-nextgen.st.dev'
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+      dni('load');
+    }, false);
   </script>
   <!-- ServiceTitan DNI -->
-
- </head>
-
+</head>
 
 <body class="sb-body sb-body_with-footer  font-ubuntu-opensans sb-content-size_m sb-buttons-border_round">
   <div class="site-wrapper">
