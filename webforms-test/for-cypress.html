@@ -103,7 +103,7 @@
         </div>
 
         <div class="sb-container s-main-type-7__container">
-            <button onclick="window.location.href='contact.html'" style="font-size: 24px; text-decoration: underline; margin-bottom: 24px">Go to Contact Page</button>
+            <button id="contact-page-btn" onclick="window.location.href='contact.html'" style="font-size: 24px; text-decoration: underline; margin-bottom: 24px">Go to Contact Page</button>
 
             <div style="margin-bottom: 20px">
                 <div style="margin-bottom: 16px; font-size: 20px">Contact Form 7</div>
@@ -257,16 +257,16 @@
                 <div style="margin-bottom: 16px; font-size: 20px">Wix Form</div>
                 <form id="wix-form" class="wix-form">
                     <div class="form-field">
-<!--                         <label for="name">Name:</label> -->
                         <input type="text" id="name" name="name" required>
                     </div>
                     <div class="form-field">
-<!--                         <label for="email">Email:</label> -->
                         <input type="email" id="email" name="email" required>
                     </div>
                     <div class="form-field">
-<!--                         <label for="message">Message:</label> -->
                         <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <div class="form-field">
+                        <input type="hidden" id="hidden-input-id" name="hidden-input-name" value="hidden-input-value">
                     </div>
                     <div class="form-field">
                         <button type="submit" >Submit</button>
