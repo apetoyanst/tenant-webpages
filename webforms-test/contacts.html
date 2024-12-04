@@ -14,6 +14,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family&#x3D;Ubuntu&amp;subset&#x3D;all&amp;display&#x3D;swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family&#x3D;Open+Sans&amp;subset&#x3D;all&amp;display&#x3D;swap">
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const submitButton = document.querySelector('#gform_submit_button_2');
+            if (submitButton) {
+                submitButton.onclick = (event) => {
+                    event.preventDefault();
+                    console.log('Form submission prevented.');
+                };
+            }
+        });
+    </script>
 
     <!-- ServiceTitan DNI -->
     <script>
