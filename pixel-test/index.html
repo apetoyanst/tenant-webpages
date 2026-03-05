@@ -44,439 +44,408 @@
 </head>
 <body>
 
-  <!-- ============================================================= -->
-  <!-- ServiceTitan DNI Script                                        -->
-  <!-- Switch between LOCAL build and CDN by toggling the src below   -->
-  <!-- LOCAL: after editing resolver.ts, run `npm run build` in       -->
-  <!--   /Users/vmelkonyan/WebstormProjects/marketing-ads-3/Clients/Tenant -->
-  <!-- ============================================================= -->
-  <script>
-    // Toggle between local build and CDN:
-    // LOCAL:  '/dni-local.js'  (symlinked or copied from marketing-ads-3 dist)
-    // CDN:    'https://static.servicetitan.com/marketing-ads/dni.js'
-    var DNI_SRC = '/dni-local.js';
+<!-- ============================================================= -->
+<!-- ServiceTitan DNI Script                                        -->
+<!-- Switch between LOCAL build and CDN by toggling the src below   -->
+<!-- LOCAL: after editing resolver.ts, run `npm run build` in       -->
+<!--   /Users/vmelkonyan/WebstormProjects/marketing-ads-3/Clients/Tenant -->
+<!-- ============================================================= -->
+<script>
+  // Toggle between local build and CDN:
+  // LOCAL:  '/dni-local.js'  (symlinked or copied from marketing-ads-3 dist)
+  // CDN:    'https://static.servicetitan.com/marketing-ads/dni.js'
+  var DNI_SRC = './dni-local.js';
 
-    dni = (function(q, w, e, r, t, y, u) {
-      q['ServiceTitanDniObject'] = t;
-      q[t] = q[t] || function() {
-        (q[t].q = q[t].q || []).push(arguments)
-      };
-      q[t].l = 1 * new Date();
-      y = w.createElement(e);
-      u = w.getElementsByTagName(e)[0];
-      y.async = true;
-      y.src = r;
-      u.parentNode.insertBefore(y, u);
-      return q[t];
-    })(window, document, 'script', DNI_SRC, 'dni');
-    dni('init', '927933731', {
-      api: 'https://mads-dni.servicetitan.com'
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-      dni('load');
-    }, false);
-  </script>
+  dni = (function(q, w, e, r, t, y, u) {
+    q['ServiceTitanDniObject'] = t;
+    q[t] = q[t] || function() {
+      (q[t].q = q[t].q || []).push(arguments)
+    };
+    q[t].l = 1 * new Date();
+    y = w.createElement(e);
+    u = w.getElementsByTagName(e)[0];
+    y.async = true;
+    y.src = r;
+    u.parentNode.insertBefore(y, u);
+    return q[t];
+  })(window, document, 'script', DNI_SRC, 'dni');
+  dni('init', '927933731', {
+    api: 'https://mads-dni.servicetitan.com'
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    dni('load');
+  }, false);
+</script>
 
-  <h1>Meta Pixel + DNI Test Harness</h1>
-  <p class="subtitle">Simulates real-world Pixel implementations with ServiceTitan DNI form tracking</p>
+<h1>Meta Pixel + DNI Test</h1>
+<p class="subtitle">Simulates real-world Pixel implementations with ServiceTitan DNI form tracking</p>
 
-  <div class="controls">
-    <button onclick="clearLogs()">Clear All Logs</button>
-    <button onclick="copyFbqLog()">Copy FBQ Log</button>
-    <button onclick="copyDniLog()">Copy DNI Log</button>
-    <button onclick="resetPixels()">Reset Pixels</button>
+<div class="controls">
+  <button onclick="clearLogs()">Clear All Logs</button>
+  <button onclick="copyFbqLog()">Copy FBQ Log</button>
+  <button onclick="copyDniLog()">Copy DNI Log</button>
+  <button onclick="resetPixels()">Reset Pixels</button>
+</div>
+
+<div class="scenarios">
+
+  <!-- Scenario 1: Pixel present, no Lead event -->
+  <div class="scenario">
+    <span class="tag tag-bad">No Lead Event</span>
+    <span class="tag tag-dni">DNI Form</span>
+    <h3>Scenario 1: PageView Only</h3>
+    <p class="desc">Pixel is on the page but no conversion event fires on form submit. DNI should still detect the form submission.</p>
+    <form id="form-scenario1" onsubmit="return submitScenario1(event)">
+      <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
+      <div class="form-row"><label>Email</label><input type="email" name="email" value="test@example.com"></div>
+      <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
+      <br>
+      <button type="submit">Submit Form</button>
+    </form>
   </div>
 
-  <div class="scenarios">
-
-    <!-- Scenario 1: Pixel present, no Lead event -->
-    <div class="scenario">
-      <span class="tag tag-bad">No Lead Event</span>
-      <span class="tag tag-dni">DNI Form</span>
-      <h3>Scenario 1: PageView Only</h3>
-      <p class="desc">Pixel is on the page but no conversion event fires on form submit. DNI should still detect the form submission.</p>
-      <form id="form-scenario1" onsubmit="return submitScenario1(event)">
-        <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
-        <div class="form-row"><label>Email</label><input type="email" name="email" value="test@example.com"></div>
-        <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
-        <br>
-        <button type="submit">Submit Form</button>
-      </form>
-    </div>
-
-    <!-- Scenario 2: Lead event, no event ID -->
-    <div class="scenario">
-      <span class="tag tag-warn">No Event ID</span>
-      <span class="tag tag-dni">DNI Form</span>
-      <h3>Scenario 2: Lead Without Event ID</h3>
-      <p class="desc">Fires Lead event but no eventID. DNI detects form but cannot deduplicate pixel event.</p>
-      <form id="form-scenario2" onsubmit="return submitScenario2(event)">
-        <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
-        <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
-        <div class="form-row"><label>Message</label><input type="text" name="message" value="Test submission"></div>
-        <br>
-        <button type="submit">Submit Form</button>
-      </form>
-    </div>
-
-    <!-- Scenario 3: Lead event with event ID -->
-    <div class="scenario">
-      <span class="tag tag-ok">Correct Implementation</span>
-      <span class="tag tag-dni">DNI Form</span>
-      <h3>Scenario 3: Lead With Event ID</h3>
-      <p class="desc">Fires Lead event with eventID. DNI can use the same eventID for CAPI deduplication.</p>
-      <form id="form-scenario3" onsubmit="return submitScenario3(event)">
-        <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
-        <div class="form-row"><label>Email</label><input type="email" name="email" value="test@example.com"></div>
-        <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
-        <br>
-        <button type="submit">Submit Form</button>
-      </form>
-    </div>
-
-    <!-- Scenario 4: Multiple pixels, different events -->
-    <div class="scenario">
-      <span class="tag tag-bad">Multiple Pixels</span>
-      <span class="tag tag-dni">DNI Form</span>
-      <h3>Scenario 4: Two Pixels, Two Events</h3>
-      <p class="desc">Two pixels fire different events for the same submission. DNI sees one form but two pixel events.</p>
-      <form id="form-scenario4" onsubmit="return submitScenario4(event)">
-        <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
-        <div class="form-row"><label>Service</label>
-          <select name="service"><option>Plumbing</option><option>HVAC</option><option>Electrical</option></select>
-        </div>
-        <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
-        <br>
-        <button type="submit">Submit Form</button>
-      </form>
-    </div>
-
-    <!-- Scenario 5: Custom event name -->
-    <div class="scenario">
-      <span class="tag tag-warn">Custom Event Name</span>
-      <span class="tag tag-dni">DNI Form</span>
-      <h3>Scenario 5: Custom Event Name</h3>
-      <p class="desc">Uses trackCustom with a non-standard event name. DNI must know which event name maps to a lead.</p>
-      <form id="form-scenario5" onsubmit="return submitScenario5(event)">
-        <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
-        <div class="form-row"><label>Email</label><input type="email" name="email" value="test@example.com"></div>
-        <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
-        <br>
-        <button type="submit">Submit Form</button>
-      </form>
-    </div>
-
-    <!-- Scenario 6: Duplicate events -->
-    <div class="scenario">
-      <span class="tag tag-bad">Duplicate Events</span>
-      <span class="tag tag-dni">DNI Form</span>
-      <h3>Scenario 6: Same Event Fired Twice</h3>
-      <p class="desc">Lead event fires twice for one submission. DNI sees one form but two pixel Lead events.</p>
-      <form id="form-scenario6" onsubmit="return submitScenario6(event)">
-        <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
-        <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
-        <div class="form-row"><label>Message</label><input type="text" name="message" value="Test submission"></div>
-        <br>
-        <button type="submit">Submit Form</button>
-      </form>
-    </div>
-
+  <!-- Scenario 2: Lead event, no event ID -->
+  <div class="scenario">
+    <span class="tag tag-warn">No Event ID</span>
+    <span class="tag tag-dni">DNI Form</span>
+    <h3>Scenario 2: Lead Without Event ID</h3>
+    <p class="desc">Fires Lead event but no eventID. DNI detects form but cannot deduplicate pixel event.</p>
+    <form id="form-scenario2" onsubmit="return submitScenario2(event)">
+      <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
+      <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
+      <div class="form-row"><label>Message</label><input type="text" name="message" value="Test submission"></div>
+      <br>
+      <button type="submit">Submit Form</button>
+    </form>
   </div>
 
-  <div class="log-header">
-    <h3>Pixel Event Log</h3>
+  <!-- Scenario 3: Lead event with event ID -->
+  <div class="scenario">
+    <span class="tag tag-ok">Correct Implementation</span>
+    <span class="tag tag-dni">DNI Form</span>
+    <h3>Scenario 3: Lead With Event ID</h3>
+    <p class="desc">Fires Lead event with eventID. DNI can use the same eventID for CAPI deduplication.</p>
+    <form id="form-scenario3" onsubmit="return submitScenario3(event)">
+      <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
+      <div class="form-row"><label>Email</label><input type="email" name="email" value="test@example.com"></div>
+      <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
+      <br>
+      <button type="submit">Submit Form</button>
+    </form>
   </div>
-  <div id="pixel-log" class="log-panel"></div>
 
-  <div class="log-header">
-    <h3>DNI Network Log</h3>
-    <span class="tag tag-dni">Requests to mads-dni.servicetitan.com</span>
+  <!-- Scenario 4: Multiple pixels, different events -->
+  <div class="scenario">
+    <span class="tag tag-bad">Multiple Pixels</span>
+    <span class="tag tag-dni">DNI Form</span>
+    <h3>Scenario 4: Two Pixels, Two Events</h3>
+    <p class="desc">Two pixels fire different events for the same submission. DNI sees one form but two pixel events.</p>
+    <form id="form-scenario4" onsubmit="return submitScenario4(event)">
+      <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
+      <div class="form-row"><label>Service</label>
+        <select name="service"><option>Plumbing</option><option>HVAC</option><option>Electrical</option></select>
+      </div>
+      <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
+      <br>
+      <button type="submit">Submit Form</button>
+    </form>
   </div>
-  <div id="dni-log" class="log-panel"></div>
 
-  <script>
-    // =========================================================
-    // INTERCEPT DNI NETWORK REQUESTS
-    // =========================================================
-    // Monkey-patch fetch and XMLHttpRequest to log DNI API calls
-    (function() {
-      window.__dniLog = [];
-      var dniLogEl; // set after DOM ready
+  <!-- Scenario 5: Custom event name -->
+  <div class="scenario">
+    <span class="tag tag-warn">Custom Event Name</span>
+    <span class="tag tag-dni">DNI Form</span>
+    <h3>Scenario 5: Custom Event Name</h3>
+    <p class="desc">Uses trackCustom with a non-standard event name. DNI must know which event name maps to a lead.</p>
+    <form id="form-scenario5" onsubmit="return submitScenario5(event)">
+      <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
+      <div class="form-row"><label>Email</label><input type="email" name="email" value="test@example.com"></div>
+      <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
+      <br>
+      <button type="submit">Submit Form</button>
+    </form>
+  </div>
 
-      // Intercept fetch
-      var origFetch = window.fetch;
-      window.fetch = function() {
-        var url = arguments[0];
-        var opts = arguments[1] || {};
-        if (typeof url === 'string' && url.includes('servicetitan.com')) {
-          var entry = {
-            timestamp: new Date().toISOString(),
-            method: opts.method || 'GET',
-            url: url,
-            body: opts.body ? tryParse(opts.body) : null
-          };
-          window.__dniLog.push(entry);
-          logDni(entry);
-        }
-        return origFetch.apply(this, arguments);
-      };
+  <!-- Scenario 6: Duplicate events -->
+  <div class="scenario">
+    <span class="tag tag-bad">Duplicate Events</span>
+    <span class="tag tag-dni">DNI Form</span>
+    <h3>Scenario 6: Same Event Fired Twice</h3>
+    <p class="desc">Lead event fires twice for one submission. DNI sees one form but two pixel Lead events.</p>
+    <form id="form-scenario6" onsubmit="return submitScenario6(event)">
+      <div class="form-row"><label>Name</label><input type="text" name="name" value="Test User"></div>
+      <div class="form-row"><label>Phone</label><input type="tel" name="phone" value="555-0199"></div>
+      <div class="form-row"><label>Message</label><input type="text" name="message" value="Test submission"></div>
+      <br>
+      <button type="submit">Submit Form</button>
+    </form>
+  </div>
 
-      // Intercept XMLHttpRequest
-      var origOpen = XMLHttpRequest.prototype.open;
-      var origSend = XMLHttpRequest.prototype.send;
+</div>
 
-      XMLHttpRequest.prototype.open = function(method, url) {
-        this.__dniMethod = method;
-        this.__dniUrl = url;
-        return origOpen.apply(this, arguments);
-      };
+<div class="log-header">
+  <h3>Pixel Event Log</h3>
+</div>
+<div id="pixel-log" class="log-panel"></div>
 
-      XMLHttpRequest.prototype.send = function(body) {
-        if (this.__dniUrl && this.__dniUrl.includes('servicetitan.com')) {
-          var entry = {
-            timestamp: new Date().toISOString(),
-            method: this.__dniMethod,
-            url: this.__dniUrl,
-            body: body ? tryParse(body) : null
-          };
-          window.__dniLog.push(entry);
-          logDni(entry);
-        }
-        return origSend.apply(this, arguments);
-      };
+<div class="log-header">
+  <h3>DNI Network Log</h3>
+  <span class="tag tag-dni">Requests to mads-dni.servicetitan.com</span>
+</div>
+<div id="dni-log" class="log-panel"></div>
 
-      function tryParse(str) {
-        try { return JSON.parse(str); } catch(e) { return str; }
+<script>
+  // =========================================================
+  // INTERCEPT DNI NETWORK REQUESTS
+  // =========================================================
+  // Monkey-patch fetch and XMLHttpRequest to log DNI API calls
+  (function() {
+    window.__dniLog = [];
+    var dniLogEl; // set after DOM ready
+
+    // Intercept fetch
+    var origFetch = window.fetch;
+    window.fetch = function() {
+      var url = arguments[0];
+      var opts = arguments[1] || {};
+      if (typeof url === 'string' && url.includes('servicetitan.com')) {
+        var entry = {
+          timestamp: new Date().toISOString(),
+          method: opts.method || 'GET',
+          url: url,
+          body: opts.body ? tryParse(opts.body) : null
+        };
+        window.__dniLog.push(entry);
+        logDni(entry);
       }
+      return origFetch.apply(this, arguments);
+    };
 
-      function logDni(entry) {
-        if (!dniLogEl) dniLogEl = document.getElementById('dni-log');
-        if (!dniLogEl) return;
+    // Intercept XMLHttpRequest
+    var origOpen = XMLHttpRequest.prototype.open;
+    var origSend = XMLHttpRequest.prototype.send;
 
-        var el = document.createElement('div');
-        el.className = 'log-entry';
+    XMLHttpRequest.prototype.open = function(method, url) {
+      this.__dniMethod = method;
+      this.__dniUrl = url;
+      return origOpen.apply(this, arguments);
+    };
 
-        var time = '<span class="log-time">' + entry.timestamp.substr(11, 12) + '</span>';
-        var method = '<span class="log-method">' + entry.method + '</span>';
-        var url = '<span class="log-url">' + entry.url + '</span>';
-        var body = entry.body ? '\n' + JSON.stringify(entry.body, null, 2) : '';
-
-        el.innerHTML = time + ' ' + method + ' ' + url + body;
-        dniLogEl.appendChild(el);
-        dniLogEl.scrollTop = dniLogEl.scrollHeight;
+    XMLHttpRequest.prototype.send = function(body) {
+      if (this.__dniUrl && this.__dniUrl.includes('servicetitan.com')) {
+        var entry = {
+          timestamp: new Date().toISOString(),
+          method: this.__dniMethod,
+          url: this.__dniUrl,
+          body: body ? tryParse(body) : null
+        };
+        window.__dniLog.push(entry);
+        logDni(entry);
       }
+      return origSend.apply(this, arguments);
+    };
 
-      window.__logDni = logDni;
-    })();
+    function tryParse(str) {
+      try { return JSON.parse(str); } catch(e) { return str; }
+    }
 
-    // =========================================================
-    // MOCK META PIXEL — behaves like the real fbq
-    // =========================================================
-    (function() {
-      if (window.fbq) return;
+    function logDni(entry) {
+      if (!dniLogEl) dniLogEl = document.getElementById('dni-log');
+      if (!dniLogEl) return;
 
-      var n = window.fbq = function() {
-        if (n.callMethod) {
-          n.callMethod.apply(n, arguments);
-        } else {
-          n.queue.push(arguments);
-        }
-      };
+      var el = document.createElement('div');
+      el.className = 'log-entry';
 
-      if (!window._fbq) window._fbq = n;
-      n.push = n;
-      n.loaded = true;
-      n.version = '2.0';
-      n.queue = [];
+      var time = '<span class="log-time">' + entry.timestamp.substr(11, 12) + '</span>';
+      var method = '<span class="log-method">' + entry.method + '</span>';
+      var url = '<span class="log-url">' + entry.url + '</span>';
+      var body = entry.body ? '\n' + JSON.stringify(entry.body, null, 2) : '';
 
-      setTimeout(function() {
-        var pixels = {};
+      el.innerHTML = time + ' ' + method + ' ' + url + body;
+      dniLogEl.appendChild(el);
+      dniLogEl.scrollTop = dniLogEl.scrollHeight;
+    }
 
-        n.callMethod = function() {
+    window.__logDni = logDni;
+  })();
+
+  // =========================================================
+  // REAL META PIXEL
+  // =========================================================
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.defer=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+          document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+  // Use test pixel IDs — replace with real ones if needed
+  var PIXEL_1 = '111111111111111';
+  var PIXEL_2 = '222222222222222';
+
+  fbq('dataProcessingOptions', ['LDU'], 0, 0);
+  fbq('init', PIXEL_1);
+  fbq('track', 'PageView');
+  fbq('init', PIXEL_2);
+  fbq('track', 'PageView');
+
+  // =========================================================
+  // UI LOGGING HOOK — wraps real fbq to show events in the log panel
+  // =========================================================
+  (function() {
+    // Wait for fbevents.js to load and set callMethod, then wrap
+    var checkInterval = setInterval(function() {
+      if (window.fbq && window.fbq.callMethod) {
+        clearInterval(checkInterval);
+        var orig = window.fbq;
+        var wrapper = function() {
           var args = Array.from(arguments);
           var method = args[0];
 
-          if (method === 'init') {
-            pixels[args[1]] = { id: args[1], fired: [] };
-          }
-
           if (method === 'track' || method === 'trackCustom' || method === 'trackSingle') {
-            var pixelId = method === 'trackSingle' ? args[1] : Object.keys(pixels)[0];
+            var pixelId = method === 'trackSingle' ? args[1] : PIXEL_1;
             var eventName = method === 'trackSingle' ? args[2] : args[1];
             var params = method === 'trackSingle' ? args[3] : args[2];
             var options = method === 'trackSingle' ? args[4] : args[3];
             var eid = (options && options.eventID) || null;
-
-            if (pixels[pixelId]) {
-              pixels[pixelId].fired.push({ event: eventName, eid: eid });
-            }
-
-            logPixel({
-              pixelId: pixelId,
-              event: eventName,
-              params: params,
-              eventID: eid,
-              method: method
-            });
+            logPixel({ pixelId: pixelId, event: eventName, params: params, eventID: eid, method: method });
+          } else if (method === 'init') {
+            logPixel({ pixelId: args[1], event: null, params: null, eventID: null, method: 'init' });
           }
 
-          if (method === 'init') {
-            logPixel({
-              pixelId: args[1],
-              event: null,
-              params: null,
-              eventID: null,
-              method: 'init'
-            });
+          return orig.apply(this, arguments);
+        };
+        Object.getOwnPropertyNames(orig).forEach(function(key) {
+          if (['length','name','arguments','caller'].indexOf(key) === -1) {
+            try { wrapper[key] = orig[key]; } catch(e) {}
           }
-        };
+        });
+        window.fbq = wrapper;
+        window._fbq = wrapper;
+      }
+    }, 10);
+    // Stop checking after 10s
+    setTimeout(function() { clearInterval(checkInterval); }, 10000);
+  })();
 
-        var q = n.queue;
-        n.queue = [];
-        for (var i = 0; i < q.length; i++) {
-          n.callMethod.apply(n, q[i]);
-        }
+  // =========================================================
+  // SCENARIO HANDLERS
+  // =========================================================
+  function generateEventId() {
+    return 'evt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
 
-        n.getState = function() {
-          return {
-            pixels: Object.keys(pixels).map(function(id) {
-              return { id: id, fired: pixels[id].fired };
-            })
-          };
-        };
-      }, 50);
-    })();
+  function generatePluginEventId() {
+    var hex = '';
+    for (var i = 0; i < 64; i++) hex += Math.floor(Math.random() * 16).toString(16);
+    return 'ob3_plugin-set_' + hex;
+  }
 
-    // =========================================================
-    // INIT PIXELS
-    // =========================================================
-    var PIXEL_1 = '111111111111111';
-    var PIXEL_2 = '222222222222222';
+  // Scenario 1: No Lead event
+  function submitScenario1(e) {
+    e.preventDefault();
+    logPixelLabel('Scenario 1: Form submitted — no pixel event fires (DNI should still detect form)');
+    // No fbq call. DNI should still intercept the form submit.
+    // Trigger DNI's form detection by dispatching submit event
+    return false;
+  }
 
-    fbq('init', PIXEL_1);
-    fbq('track', 'PageView');
-    fbq('init', PIXEL_2);
-    fbq('track', 'PageView');
+  // Scenario 2: Lead without event ID
+  function submitScenario2(e) {
+    e.preventDefault();
+    logPixelLabel('Scenario 2: Lead fires without eventID');
+    fbq('track', 'Lead');
+    return false;
+  }
 
-    // =========================================================
-    // SCENARIO HANDLERS
-    // =========================================================
-    function generateEventId() {
-      return 'evt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    }
+  // Scenario 3: Lead with event ID
+  function submitScenario3(e) {
+    e.preventDefault();
+    var eid = generateEventId();
+    logPixelLabel('Scenario 3: Lead fires with eventID = ' + eid);
+    fbq('track', 'Lead', {}, { eventID: eid });
+    return false;
+  }
 
-    function generatePluginEventId() {
-      var hex = '';
-      for (var i = 0; i < 64; i++) hex += Math.floor(Math.random() * 16).toString(16);
-      return 'ob3_plugin-set_' + hex;
-    }
+  // Scenario 4: Two pixels fire different events
+  function submitScenario4(e) {
+    e.preventDefault();
+    var pluginEid = generatePluginEventId();
+    logPixelLabel('Scenario 4: Pixel 1 fires Lead (no ID), Pixel 2 fires Schedule (plugin ID)');
+    fbq('trackSingle', PIXEL_1, 'Lead');
+    fbq('trackSingle', PIXEL_2, 'Schedule', {}, { eventID: pluginEid });
+    return false;
+  }
 
-    // Scenario 1: No Lead event
-    function submitScenario1(e) {
-      e.preventDefault();
-      logPixelLabel('Scenario 1: Form submitted — no pixel event fires (DNI should still detect form)');
-      // No fbq call. DNI should still intercept the form submit.
-      // Trigger DNI's form detection by dispatching submit event
-      return false;
-    }
+  // Scenario 5: Custom event name
+  function submitScenario5(e) {
+    e.preventDefault();
+    logPixelLabel('Scenario 5: trackCustom with non-standard name');
+    fbq('trackCustom', 'WebformSubmission', { form_name: 'contact' });
+    return false;
+  }
 
-    // Scenario 2: Lead without event ID
-    function submitScenario2(e) {
-      e.preventDefault();
-      logPixelLabel('Scenario 2: Lead fires without eventID');
+  // Scenario 6: Duplicate Lead events
+  function submitScenario6(e) {
+    e.preventDefault();
+    logPixelLabel('Scenario 6: Lead fires twice (inline + GTM)');
+    fbq('track', 'Lead');
+    setTimeout(function() {
       fbq('track', 'Lead');
-      return false;
-    }
+    }, 100);
+    return false;
+  }
 
-    // Scenario 3: Lead with event ID
-    function submitScenario3(e) {
-      e.preventDefault();
-      var eid = generateEventId();
-      logPixelLabel('Scenario 3: Lead fires with eventID = ' + eid);
-      fbq('track', 'Lead', {}, { eventID: eid });
-      return false;
-    }
+  // =========================================================
+  // UI LOGGING — Pixel Log
+  // =========================================================
+  function logPixel(data) {
+    var el = document.createElement('div');
+    el.className = 'log-entry';
 
-    // Scenario 4: Two pixels fire different events
-    function submitScenario4(e) {
-      e.preventDefault();
-      var pluginEid = generatePluginEventId();
-      logPixelLabel('Scenario 4: Pixel 1 fires Lead (no ID), Pixel 2 fires Schedule (plugin ID)');
-      fbq('trackSingle', PIXEL_1, 'Lead');
-      fbq('trackSingle', PIXEL_2, 'Schedule', {}, { eventID: pluginEid });
-      return false;
-    }
+    var time = '<span class="log-time">' + new Date().toISOString().substr(11, 12) + '</span>';
+    var method = '<span class="log-method">' + data.method + '</span>';
+    var event = data.event ? '<span class="log-event">' + data.event + '</span>' : '';
+    var pixel = '<span class="log-pixel">pixel:' + data.pixelId + '</span>';
+    var eid = data.eventID
+            ? '<span class="log-eid">eventID:' + data.eventID + '</span>'
+            : '<span style="color:#666">eventID:(none)</span>';
+    var params = data.params ? ' params:' + JSON.stringify(data.params) : '';
 
-    // Scenario 5: Custom event name
-    function submitScenario5(e) {
-      e.preventDefault();
-      logPixelLabel('Scenario 5: trackCustom with non-standard name');
-      fbq('trackCustom', 'WebformSubmission', { form_name: 'contact' });
-      return false;
-    }
+    el.innerHTML = time + ' ' + method + ' ' + event + ' ' + pixel + ' ' + eid + params;
+    document.getElementById('pixel-log').appendChild(el);
+    document.getElementById('pixel-log').scrollTop = document.getElementById('pixel-log').scrollHeight;
+  }
 
-    // Scenario 6: Duplicate Lead events
-    function submitScenario6(e) {
-      e.preventDefault();
-      logPixelLabel('Scenario 6: Lead fires twice (inline + GTM)');
-      fbq('track', 'Lead');
-      setTimeout(function() {
-        fbq('track', 'Lead');
-      }, 100);
-      return false;
-    }
+  function logPixelLabel(text) {
+    var el = document.createElement('div');
+    el.className = 'log-entry';
+    el.innerHTML = '<span class="log-label">--- ' + text + ' ---</span>';
+    document.getElementById('pixel-log').appendChild(el);
+    document.getElementById('pixel-log').scrollTop = document.getElementById('pixel-log').scrollHeight;
+  }
 
-    // =========================================================
-    // UI LOGGING — Pixel Log
-    // =========================================================
-    function logPixel(data) {
-      var el = document.createElement('div');
-      el.className = 'log-entry';
+  function clearLogs() {
+    document.getElementById('pixel-log').innerHTML = '';
+    document.getElementById('dni-log').innerHTML = '';
+  }
 
-      var time = '<span class="log-time">' + new Date().toISOString().substr(11, 12) + '</span>';
-      var method = '<span class="log-method">' + data.method + '</span>';
-      var event = data.event ? '<span class="log-event">' + data.event + '</span>' : '';
-      var pixel = '<span class="log-pixel">pixel:' + data.pixelId + '</span>';
-      var eid = data.eventID
-        ? '<span class="log-eid">eventID:' + data.eventID + '</span>'
-        : '<span style="color:#666">eventID:(none)</span>';
-      var params = data.params ? ' params:' + JSON.stringify(data.params) : '';
+  function copyFbqLog() {
+    var data = window.__fbqLog || [];
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(function() {
+      alert('Copied ' + data.length + ' FBQ entries');
+    });
+  }
 
-      el.innerHTML = time + ' ' + method + ' ' + event + ' ' + pixel + ' ' + eid + params;
-      document.getElementById('pixel-log').appendChild(el);
-      document.getElementById('pixel-log').scrollTop = document.getElementById('pixel-log').scrollHeight;
-    }
+  function copyDniLog() {
+    var data = window.__dniLog || [];
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(function() {
+      alert('Copied ' + data.length + ' DNI entries');
+    });
+  }
 
-    function logPixelLabel(text) {
-      var el = document.createElement('div');
-      el.className = 'log-entry';
-      el.innerHTML = '<span class="log-label">--- ' + text + ' ---</span>';
-      document.getElementById('pixel-log').appendChild(el);
-      document.getElementById('pixel-log').scrollTop = document.getElementById('pixel-log').scrollHeight;
-    }
-
-    function clearLogs() {
-      document.getElementById('pixel-log').innerHTML = '';
-      document.getElementById('dni-log').innerHTML = '';
-    }
-
-    function copyFbqLog() {
-      var data = window.__fbqLog || [];
-      navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(function() {
-        alert('Copied ' + data.length + ' FBQ entries');
-      });
-    }
-
-    function copyDniLog() {
-      var data = window.__dniLog || [];
-      navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(function() {
-        alert('Copied ' + data.length + ' DNI entries');
-      });
-    }
-
-    function resetPixels() {
-      location.reload();
-    }
-  </script>
+  function resetPixels() {
+    location.reload();
+  }
+</script>
 </body>
 </html>
