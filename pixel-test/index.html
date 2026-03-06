@@ -183,6 +183,51 @@
 
 </div>
 
+<h2 style="margin: 24px 0 12px;">Call Scenarios</h2>
+<div class="scenarios">
+
+  <!-- Call Scenario 1: No pixel event on call -->
+  <div class="scenario">
+    <span class="tag tag-bad">No Pixel Event</span>
+    <h3>Call 1: No Tracking</h3>
+    <p class="desc">Phone link with no pixel event. Most common in the wild.</p>
+    <a href="tel:5550100" onclick="callScenario1(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (555) 010-0100
+    </a>
+  </div>
+
+  <!-- Call Scenario 2: Contact event, no event ID (like dandfplumbing.com) -->
+  <div class="scenario">
+    <span class="tag tag-warn">No Event ID</span>
+    <h3>Call 2: Contact Event, No ID</h3>
+    <p class="desc">Fires fbq('track','Contact') on click but no eventID. Matches: dandfplumbing.com</p>
+    <a href="tel:5550200" onclick="callScenario2(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (555) 020-0200
+    </a>
+  </div>
+
+  <!-- Call Scenario 3: Contact event WITH event ID (correct implementation) -->
+  <div class="scenario">
+    <span class="tag tag-ok">Correct Implementation</span>
+    <h3>Call 3: Contact Event With ID</h3>
+    <p class="desc">Fires fbq('track','Contact',{},{eventID:'...'}) on click. Correct implementation for deduplication.</p>
+    <a href="tel:5550300" onclick="callScenario3(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (555) 030-0300
+    </a>
+  </div>
+
+  <!-- Call Scenario 4: Lead event on call (like woodstockheating.com) -->
+  <div class="scenario">
+    <span class="tag tag-warn">Wrong Event Name</span>
+    <h3>Call 4: Lead Event on Call</h3>
+    <p class="desc">Fires fbq('track','Lead') on phone click. Uses form event name for calls. Matches: woodstockheating.com</p>
+    <a href="tel:5550400" onclick="callScenario4(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (555) 040-0400
+    </a>
+  </div>
+
+</div>
+
 <div class="log-header">
   <h3>Pixel Event Log</h3>
 </div>
@@ -393,6 +438,39 @@
       fbq('track', 'Lead');
     }, 100);
     return false;
+  }
+
+  // =========================================================
+  // CALL SCENARIO HANDLERS
+  // =========================================================
+
+  // Call 1: No pixel event
+  function callScenario1(e) {
+    e.preventDefault();
+    logPixelLabel('Call 1: Phone clicked — no pixel event fires');
+    // Nothing. Just a tel: link click with no tracking.
+  }
+
+  // Call 2: Contact event, no event ID (like dandfplumbing.com)
+  function callScenario2(e) {
+    e.preventDefault();
+    logPixelLabel('Call 2: Contact fires without eventID');
+    fbq('track', 'Contact');
+  }
+
+  // Call 3: Contact event WITH event ID (correct implementation)
+  function callScenario3(e) {
+    e.preventDefault();
+    var eid = generateEventId();
+    logPixelLabel('Call 3: Contact fires with eventID = ' + eid);
+    fbq('track', 'Contact', {}, { eventID: eid });
+  }
+
+  // Call 4: Lead event on call (wrong event name for calls)
+  function callScenario4(e) {
+    e.preventDefault();
+    logPixelLabel('Call 4: Lead fires on phone click (wrong event name)');
+    fbq('track', 'Lead');
   }
 
   // =========================================================
