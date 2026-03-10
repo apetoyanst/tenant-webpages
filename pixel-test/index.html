@@ -323,14 +323,10 @@
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
           document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
-  // Use test pixel IDs — replace with real ones if needed
-  var PIXEL_1 = '111111111111111';
-  var PIXEL_2 = '222222222222222';
+  var PIXEL_1 = '2042575089935192';
 
   fbq('dataProcessingOptions', ['LDU'], 0, 0);
   fbq('init', PIXEL_1);
-  fbq('track', 'PageView');
-  fbq('init', PIXEL_2);
   fbq('track', 'PageView');
 
   // =========================================================
