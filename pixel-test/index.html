@@ -54,7 +54,7 @@
   // Toggle between local build and CDN:
   // LOCAL:  '/dni-local.js'  (symlinked or copied from marketing-ads-3 dist)
   // CDN:    'https://static.servicetitan.com/marketing-ads/dni.js'
-  var DNI_SRC = './dni-local.js';
+  var DNI_SRC = 'https://static.servicetitan.com/marketing-ads/stage-dni.js';
 
   dni = (function(q, w, e, r, t, y, u) {
     q['ServiceTitanDniObject'] = t;
@@ -70,7 +70,7 @@
     return q[t];
   })(window, document, 'script', DNI_SRC, 'dni');
   dni('init', '927933731', {
-    api: 'https://mads-dni.servicetitan.com'
+    api: 'https://mads-stage-dni.servicetitan.com'
   });
   document.addEventListener('DOMContentLoaded', function() {
     dni('load');
@@ -191,8 +191,8 @@
     <span class="tag tag-bad">No Pixel Event</span>
     <h3>Call 1: No Tracking</h3>
     <p class="desc">Phone link with no pixel event. Most common in the wild.</p>
-    <a href="tel:5550100" onclick="callScenario1(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-      Call (555) 010-0100
+    <a href="tel:8184567890" onclick="callScenario1(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (818) 456-7890
     </a>
   </div>
 
@@ -201,8 +201,8 @@
     <span class="tag tag-warn">No Event ID</span>
     <h3>Call 2: Contact Event, No ID</h3>
     <p class="desc">Fires fbq('track','Contact') on click but no eventID. Matches: dandfplumbing.com</p>
-    <a href="tel:5550200" onclick="callScenario2(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-      Call (555) 020-0200
+    <a href="tel:8184567891" onclick="callScenario2(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (818) 456-7891
     </a>
   </div>
 
@@ -211,8 +211,8 @@
     <span class="tag tag-ok">Correct Implementation</span>
     <h3>Call 3: Contact Event With ID</h3>
     <p class="desc">Fires fbq('track','Contact',{},{eventID:'...'}) on click. Correct implementation for deduplication.</p>
-    <a href="tel:5550300" onclick="callScenario3(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-      Call (555) 030-0300
+    <a href="tel:8184567892" onclick="callScenario3(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (818) 456-7892
     </a>
   </div>
 
@@ -221,8 +221,8 @@
     <span class="tag tag-warn">Wrong Event Name</span>
     <h3>Call 4: Lead Event on Call</h3>
     <p class="desc">Fires fbq('track','Lead') on phone click. Uses form event name for calls. Matches: woodstockheating.com</p>
-    <a href="tel:5550400" onclick="callScenario4(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-      Call (555) 040-0400
+    <a href="tel:8184567893" onclick="callScenario4(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+      Call (818) 456-7893
     </a>
   </div>
 
@@ -323,10 +323,12 @@
     t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
           document,'script','https://connect.facebook.net/en_US/fbevents.js');
 
-  var PIXEL_1 = '2042575089935192';
+  var PIXEL_1 = '771906198711008';
+  var PIXEL_2 = '1282296356212315';
 
   fbq('dataProcessingOptions', ['LDU'], 0, 0);
   fbq('init', PIXEL_1);
+  fbq('init', PIXEL_2);
   fbq('track', 'PageView');
 
   // =========================================================
