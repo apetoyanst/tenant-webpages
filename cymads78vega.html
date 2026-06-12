@@ -191,8 +191,8 @@
         <span class="tag tag-bad">No Pixel Event</span>
         <h3>Call 1: No Tracking</h3>
         <p class="desc">Phone link with no pixel event. Most common in the wild.</p>
-        <a href="tel:8337688883" onclick="callScenario1(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-            Call (833) 768-8883
+        <a href="tel:8182222233" onclick="callScenario1(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+            Call (818) 222-2233
         </a>
     </div>
 
@@ -201,8 +201,8 @@
         <span class="tag tag-warn">No Event ID</span>
         <h3>Call 2: Contact Event, No ID</h3>
         <p class="desc">Fires fbq('track','Contact') on click but no eventID. Matches: dandfplumbing.com</p>
-        <a href="tel:8337688883" onclick="callScenario2(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-            Call (833) 768-8883
+        <a href="tel:8182222233" onclick="callScenario2(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+            Call (818) 222-2233
         </a>
     </div>
 
@@ -211,8 +211,8 @@
         <span class="tag tag-ok">Correct Implementation</span>
         <h3>Call 3: Contact Event With ID</h3>
         <p class="desc">Fires fbq('track','Contact',{},{eventID:'...'}) on click. Correct implementation for deduplication.</p>
-        <a href="tel:8337688883" onclick="callScenario3(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-            Call (833) 768-8883
+        <a href="tel:8182222233" onclick="callScenario3(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+            Call (818) 222-2233
         </a>
     </div>
 
@@ -221,8 +221,8 @@
         <span class="tag tag-warn">Wrong Event Name</span>
         <h3>Call 4: Lead Event on Call</h3>
         <p class="desc">Fires fbq('track','Lead') on phone click. Uses form event name for calls. Matches: woodstockheating.com</p>
-        <a href="tel:8337688883" onclick="callScenario4(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
-            Call (833) 768-8883
+        <a href="tel:8182222233" onclick="callScenario4(event)" style="font-size:18px; font-weight:bold; color:#1877f2; text-decoration:none;">
+            Call Call (818) 222-2233
         </a>
     </div>
 
