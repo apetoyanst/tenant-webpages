@@ -46,7 +46,8 @@
 <!-- Mock USP/CCPA consent banner for testing MAD-6136 (CMP-agnostic banner opt-out detection) -->
 <div id="usp-consent-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1f1f1f;color:#fff;padding:16px 24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;font-family:sans-serif;box-shadow:0 -2px 8px rgba(0,0,0,.3);">
     <div style="max-width:560px;font-size:14px;">
-        This site uses cookies. <code>window.__uspapi</code> has already been installed as opted-out (<code>1YYN</code>) on page load for the DNI resolver. Use the buttons below to change your preference.
+        This site uses cookies. Choose a privacy preference to simulate the USP API (<code>window.__uspapi</code>) that the DNI resolver polls for.
+        <br><span id="usp-countdown" style="color:#ffca28;"></span>
     </div>
     <div style="display:flex;gap:8px;">
         <button id="usp-accept-btn" type="button" style="padding:8px 16px;border:none;border-radius:4px;background:#4caf50;color:#fff;cursor:pointer;">Accept (no opt-out)</button>
@@ -93,11 +94,26 @@
             document.getElementById('usp-consent-banner').style.display = 'none';
         });
 
-        // Install as opted-out immediately on page load (not gated behind a button click) so
-        // the DNI resolver's one-time poll for window.__uspapi always sees a value, regardless
-        // of whether the tester interacts with the banner before it runs.
-        setUspString('1YYN');
-        log('Page loaded. window.__uspapi installed by default — use the banner to switch preference.');
+        // window.__uspapi must NOT exist until the tester clicks a banner option — the DNI
+        // resolver's pollForCmpApis() checks for it synchronously on init and, if found
+        // immediately, resolves the opt-out with no further wait. Installing it eagerly here
+        // would report an opt-out before any consent action actually happened. Instead we rely
+        // on the resolver's poll interval (every 100ms, up to a 3s timeout — matching
+        // cmpPollIntervalMs/cmpPollTimeoutMs) to pick up window.__uspapi whenever the tester
+        // clicks, so leave it undefined until then.
+        var remainingMs = 3000;
+        var countdownEl = document.getElementById('usp-countdown');
+        var countdownTimer = setInterval(function() {
+            remainingMs -= 100;
+            if (remainingMs <= 0) {
+                countdownEl.textContent = 'Polling window closed — reload the page to try again.';
+                clearInterval(countdownTimer);
+                return;
+            }
+            countdownEl.textContent = 'DNI polling window: ' + (remainingMs / 1000).toFixed(1) + 's remaining';
+        }, 100);
+
+        log('Page loaded. window.__uspapi is NOT installed yet. Click a banner option within 3s to feed it to the DNI resolver.');
     })();
 </script>
 
