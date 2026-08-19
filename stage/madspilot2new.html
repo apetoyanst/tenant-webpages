@@ -43,15 +43,23 @@
 
 <body class="sb-body sb-body_with-footer  font-ubuntu-opensans sb-content-size_m sb-buttons-border_round">
 
-<!-- Mock USP/CCPA consent banner for testing MAD-6136 (CMP-agnostic banner opt-out detection) -->
+<!-- Mock CMP consent banner for testing MAD-6136 (CMP-agnostic banner opt-out detection) -->
 <div id="usp-consent-banner" style="position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1f1f1f;color:#fff;padding:16px 24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;font-family:sans-serif;box-shadow:0 -2px 8px rgba(0,0,0,.3);">
     <div style="max-width:560px;font-size:14px;">
-        This site uses cookies. Choose a privacy preference to simulate the USP API (<code>window.__uspapi</code>) that the DNI resolver polls for.
+        This site uses cookies. Choose a privacy preference below to simulate whichever CMP the DNI resolver detects: the USP API (<code>window.__uspapi</code>), or — if that isn't found within its poll window — OneTrust (<code>window.OneTrust</code> / <code>window.OnetrustActiveGroups</code>).
         <br><span id="usp-countdown" style="color:#ffca28;"></span>
     </div>
-    <div style="display:flex;gap:8px;">
-        <button id="usp-accept-btn" type="button" style="padding:8px 16px;border:none;border-radius:4px;background:#4caf50;color:#fff;cursor:pointer;">Accept (no opt-out)</button>
-        <button id="usp-reject-btn" type="button" style="padding:8px 16px;border:none;border-radius:4px;background:#e53935;color:#fff;cursor:pointer;">Do Not Sell My Info (opt-out)</button>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;opacity:.75;width:64px;">USP:</span>
+            <button id="usp-accept-btn" type="button" style="padding:8px 16px;border:none;border-radius:4px;background:#4caf50;color:#fff;cursor:pointer;">Accept (no opt-out)</button>
+            <button id="usp-reject-btn" type="button" style="padding:8px 16px;border:none;border-radius:4px;background:#e53935;color:#fff;cursor:pointer;">Do Not Sell My Info (opt-out)</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;opacity:.75;width:64px;">OneTrust:</span>
+            <button id="onetrust-accept-btn" type="button" style="padding:8px 16px;border:none;border-radius:4px;background:#4caf50;color:#fff;cursor:pointer;">Accept (no opt-out)</button>
+            <button id="onetrust-reject-btn" type="button" style="padding:8px 16px;border:none;border-radius:4px;background:#e53935;color:#fff;cursor:pointer;">Do Not Sell My Info (opt-out)</button>
+        </div>
     </div>
 </div>
 
@@ -113,7 +121,33 @@
             countdownEl.textContent = 'DNI polling window: ' + (remainingMs / 1000).toFixed(1) + 's remaining';
         }, 100);
 
-        log('Page loaded. window.__uspapi is NOT installed yet. Click a banner option within 3s to feed it to the DNI resolver.');
+        // window.OneTrust itself is safe to install right away: resolver.ts only checks its
+        // *presence* in pollForOneTrust() (matching real sites, where the OneTrust script tag
+        // loads well before the user acts on the banner). It does NOT by itself report an
+        // opt-out — that only happens once window.OnetrustActiveGroups is set and the
+        // 'OneTrustGroupsUpdated' event fires, which listenForOneTrustOptOut() listens for.
+        // Note resolver.ts only falls back to OneTrust when pollForCmpApis() found none of
+        // __uspapi/__tcfapi/__gpp, so this path is only reached ~3s after load if the USP
+        // buttons above are never clicked.
+        window.OneTrust = window.OneTrust || {};
+        var oneTrustAdvertisingGroupId = 'C0004';
+
+        function setOneTrustGroups(activeGroups) {
+            window.OnetrustActiveGroups = activeGroups.join(',') + ',';
+            window.dispatchEvent(new CustomEvent('OneTrustGroupsUpdated', { detail: activeGroups }));
+            log('window.OnetrustActiveGroups set to "' + window.OnetrustActiveGroups + '" and OneTrustGroupsUpdated dispatched');
+        }
+
+        document.getElementById('onetrust-accept-btn').addEventListener('click', function() {
+            setOneTrustGroups(['C0001', 'C0002', 'C0003', oneTrustAdvertisingGroupId]);
+            document.getElementById('usp-consent-banner').style.display = 'none';
+        });
+        document.getElementById('onetrust-reject-btn').addEventListener('click', function() {
+            setOneTrustGroups(['C0001', 'C0002', 'C0003']);
+            document.getElementById('usp-consent-banner').style.display = 'none';
+        });
+
+        log('Page loaded. window.OneTrust installed (presence only). window.__uspapi is NOT installed yet. Click a banner option within 3s to feed it to the DNI resolver, or use the OneTrust buttons to test the fallback CMP path.');
     })();
 </script>
 
